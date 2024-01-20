@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <title>Admin_Rooms</title>
+    <link rel="stylesheet" href="/css/admindashboard.css">
+    <style>
+        .table{
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+<main>
+    <!--<header>
+        <h2>Admin Dashboard</h2>
+    </header>-->
+    <section id="mainSection" style="display: flex;">
+        <article class=" article-left" style="width: 30%;height: 100vh;">
+            <i class="fa fa-heart-o fa-5x" aria-hidden="true"></i>
+            <h2 class="text-center title" style="text-align: center;">Zakhama Hotel</h2>
+            <ul class="fa-ul">
+                <li><i class="fa fa-home" aria-hidden="true"></i><a href="/home">Home</a></li>
+                <li><i class="fa fa-list-alt" aria-hidden="true"></i><a href="/adminDashboard">Reservations</a></li>
+                <li class="selected"><i class="fa fa-bed" aria-hidden="true"></i><a href="/AdminRooms">Rooms</a></li>
+            </ul>
+        </article>
+        <article class="article-right" style="width: 100%;">
+            <div>
+                <h1 style="margin-bottom: 25px;
+                font-size: 50px;
+                color: rebeccapurple;
+                text-decoration: underline; text-align: center;">My Rooms</h1>
+            </div><hr>
+
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addRoom">
+                + New Room
+            </button>
+
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>Room Number</th>
+                    <th>Room Name</th>
+                    <th>Room Type</th>
+                    <th>Room Capacity</th>
+                    <th>Action</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="room : ${rooms}">
+                    <td th:text="${room.roomNumber}"></td>
+                    <td th:text="${room.roomName}"></td>
+                    <td th:text="${room.roomType}"></td>
+                    <td th:text="${room.roomCapacity}"></td>
+                    <td>
+                        <button class="btn btn-secondary" th:onclick="'updateRoom(\'' + ${room.getId()} + '\',\'update\')'">Update</button>
+                        <button class="btn btn-danger" th:onclick="'deleteRoom(\'' + ${room.getId()} + '\',\'delete\')'">delete</button>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+
+
+        </article>
+    </section>
+    <div class="modal fade" id="addRoom" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form th:action="@{/AdminRooms}" th:object="${room}" method="post" onsubmit="addRoom(e)">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Add Room</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="roomName">Room Name:</label>
+                            <input type="text" class="form-control" id="roomName" name="roomName" th:field="*{roomName}" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="roomNumber">Room Number:</label>
+                            <input type="number" class="form-control" id="roomNumber" name="roomNumber" min="0" th:field="*{roomNumber}" required>
+                            <p id="msg" style="color: red;font-weight: bold;" th:text="${errorMsg}"></p>
+                        </div>
+                        <div class="form-group">
+                            <label for="roomType">Room Type:</label>
+                            <select name="roomType" id="roomType" class="form-control" th:field="*{roomType}" required>
+                                <option value="single">Single</option>
+                                <option value="double">Double</option>
+                                <option value="sweet">Sweet</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="roomNumber">Room Capacity:</label>
+                            <input type="number" class="form-control" id="roomCapacity" name="roomCapacity" min="0" step="1" required th:field="*{roomCapacity}">
+                        </div>
+                        <div class="form-group">
+                            <label for="roomDescription">Room Description:</label>
+                            <textarea id="roomDescription" name="roomDescription" class="form-control" th:field="*{roomDescription}"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="roomImage">Room Url Image:</label>
+                            <input type="text" id="roomImage" name="roomImage" class="form-control" required th:field="*{roomImage}">
+                        </div>
+
+
+                        <!-- <input type="file" id="roomImage" name="roomImage" accept="image/*">-->
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" onclick="addRoom()" class="btn btn-primary">Add Room</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="updateRoom" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form id="updateForm">
+                    <input type="hidden" name="id" id="id">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleUpateModalLabel">Update Room</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="u_roomName">Room Name:</label>
+                            <input type="text" class="form-control" id="u_roomName" name="u_roomName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="u_roomNumber">Room Number:</label>
+                            <input type="number" class="form-control" id="u_roomNumber" name="u_roomNumber" min="0"  required>
+                            <p th:if="${errorMsg != null}" style="color: red;font-weight: bold;" th:text="${errorMsg}"></p>
+                        </div>
+                        <div class="form-group">
+                            <label for="u_roomType">Room Type:</label>
+                            <select name="u_roomType" id="u_roomType" class="form-control"  required>
+                                <option value="single">Single</option>
+                                <option value="double">Double</option>
+                                <option value="sweet">Sweet</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="u_roomCapacity">Room Capacity:</label>
+                            <input type="number" class="form-control" id="u_roomCapacity" name="u_roomCapacity" min="0" step="1" required >
+                        </div>
+                        <div class="form-group">
+                            <label for="u_roomDescription">Room Description:</label>
+                            <textarea id="u_roomDescription" name="u_roomDescription" class="form-control" ></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="u_roomImage">Room Url Image:</label>
+                            <input type="text" id="u_roomImage" name="u_roomImage" class="form-control" required >
+                        </div>
+
+
+                        <!-- <input type="file" id="roomImage" name="roomImage" accept="image/*">-->
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" onclick="submitUpdate()" class="btn btn-primary">Update Room</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</main>
+</body>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossOrigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script th:inline="javascript">
+    function confirmReservation(reservationId, action) {
+        Swal.fire({
+            title: "Are you sure?",
+            text: "You won't be able to revert this!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Yes, continue!"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    type: 'POST',
+                    url: '/adminDashboard',
+                    data: { id: reservationId, action: action },
+                    success: function (response) {
+                        $('.table').load(' .table > * ');
+                        Swal.fire({
+                            title: "Success!",
+                            text: response,
+                            icon: "success"
+                        });
+                    },
+                    error: function (error) {
+                        console.error(error);
+                    }
+                });
+
+            }
+        });
+
+
+    }
+</script>
+</html>
+<script th:inline="javascript">
+    function addRoom(){
+        event.preventDefault();
+        let room = $(this).serialize();
+        $.ajax({
+            url : '/AdminRooms',
+            method: 'post',
+            data :{
+                roomName : $('#roomName').val(),
+                roomNumber : $('#roomNumber').val(),
+                roomType : $('#roomType').val(),
+                roomCapacity : $('#roomCapacity').val(),
+                roomDescription : $('#roomDescription').val(),
+                roomImage : $('#roomImage').val(),
+            },
+            success : function(data){
+                if(data == "success"){
+                    Swal.fire({
+                        title: "Success!",
+                        text: "Room Created Successfully!",
+                        icon: "success"
+                    });
+                    $('.table').load(' .table > * ');
+                    $('#addRoom').modal('hide');
+                } else {
+                    $('#msg').html(data);
+                }
+            }
+        })
+    }
+    function deleteRoom(roomId, action) {
+        Swal.fire({
+            title: "Are you sure?",
+            text: "You won't be able to revert this!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Yes, delete it!"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    type: 'POST',
+                    url: '/deleteRoom',
+                    data: { id: roomId, action: action },
+                    success: function (response) {
+                        $('.table').load(' .table > * ');
+                        if(response == "success"){
+                            Swal.fire({
+                                title: "Success!",
+                                text: "Room deleted successfully",
+                                icon: "success"
+                            });
+                        } else {
+                            Swal.fire({
+                                title: "error!",
+                                text: response,
+                                icon: "error"
+                            });
+                        }
+
+                    },
+                    error: function (error) {
+                        console.error(error);
+                    }
+                });
+
+            }
+        });
+
+
+    }
+
+    function updateRoom(roomId,action){
+        $.ajax({
+            type: 'POST',
+            url: '/updateRoom',
+            data: { id: roomId, action: action },
+            success: function (response) {
+
+                $("#id").val(response.id);
+                $('#u_roomName').val(response.roomName);
+                $('#u_roomNumber').val(response.roomNumber);
+                $('#u_roomType').val(response.roomType);
+                $('#u_roomCapacity').val(response.roomCapacity);
+                $('#u_roomDescription').val(response.roomDescription);
+                $('#u_roomImage').val(response.roomImage);
+                $('#updateRoom').modal("show");
+            },
+            error: function (error) {
+                console.error(error);
+            }
+        });
+    }
+
+    function submitUpdate(){
+        $.ajax({
+            url:'/submitupdateRoom',
+            method:'post',
+            data : {
+                id : $('#id').val(),
+                roomName : $('#u_roomName').val(),
+                roomType : $('#u_roomType').val(),
+                roomCapacity : $('#u_roomCapacity').val(),
+                roomDescription : $('#u_roomDescription').val(),
+                roomImage : $('#u_roomImage').val(),
+            },
+            success : function(response){
+                $('.table').load(' .table > * ');
+                $('#updateRoom').modal("hide");
+                Swal.fire({
+                    title: "Success!",
+                    text: response,
+                    icon: "success"
+                });
+
+            }
+        })
+    }
+</script>

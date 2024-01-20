@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>LIST</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="/css/liste_reservations.css">
+
+</head>
+<body>
+
+<div style="display: flex;align-items: center;justify-content: space-around;margin-bottom: 30px;height: 110px;background: #212121;color: #ffffff;">
+    <h2 id="title">Zakhama Hotel</h2>
+
+    <ul id="mainNav" style="display: flex;">
+        <li><a href="/home">HOME</a></li>
+        <li><a href="/packs">PACKS</a></li>
+        <li><a href="/reservation">RESERVATION</a></li>
+    </ul>
+    <p><a href="/login" id="openRooms">Log In</a></p>
+</div>
+
+<div class="container" style="text-align: center;">
+    <h1 style="margin-bottom: 25px;
+    font-size: 50px;
+    color: rebeccapurple;
+    text-decoration: underline;">Reservations In Demand</h1>
+    <table class="table table-sm table-hover">
+    <thead>
+    <tr>
+        <th>#NO</th>
+        <th>User Name</th>
+        <th>Email</th>
+        <th>Phone Number</th>
+        <th>Room Preference</th>
+        <th>Adults</th>
+        <th>Children</th>
+        <th>Check-in</th>
+        <th>Check-out</th>
+        <th>Action</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="reservation,i : ${reservations}">
+        <td th:text="${i.index + 1}"></td>
+        <td th:text="${reservation.name}"></td>
+        <td th:text="${reservation.email}"></td>
+        <td th:text="${reservation.phone_number}"></td>
+        <td th:text="${reservation.room_preference}"></td>
+        <td th:text="${reservation.nb_adults}"></td>
+        <td th:text="${reservation.nb_children}"></td>
+        <td th:text="${reservation.check_in_date}"></td>
+        <td th:text="${reservation.getCheck_out_date()}"></td>
+        <td style="display: flex;">
+            <button type="button" class="btn btn-success" th:onclick="'confirmReservation(\'' + ${reservation.id} + '\',\'confirm\')'">Confirm</button>
+            <button type="button" class="btn btn-danger" th:onclick="'confirmReservation(\'' + ${reservation.id} + '\',\'cancel\')'">Cancel</button>
+        </td>
+    </tr>
+    </tbody>
+</table>
+</div>
+</body>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossOrigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script th:inline="javascript">
+    function confirmReservation(reservationId, action) {
+        Swal.fire({
+            title: "Are you sure?",
+            text: "You won't be able to revert this!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Yes, continue!"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    type: 'POST',
+                    url: '/liste_reservation',
+                    data: { id: reservationId, action: action },
+                    success: function (response) {
+                        $('.table').load(' .table > * ');
+                        Swal.fire({
+                            title: "Success!",
+                            text: response,
+                            icon: "success"
+                        });
+                    },
+                    error: function (error) {
+                        console.error(error);
+                    }
+                });
+
+            }
+        });
+
+
+    }
+</script>
+
+</html>

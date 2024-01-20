@@ -1,0 +1,61 @@
+@import url('https://fonts.googleapis.com/css?family=Poppins:100,100i,200,200i,300,300i,400,400i,500,500i,600,600i,700,700i,800,800i,900,900i|Roboto:100,100i,300,300i,400,400i,500,500i,700,700i,900,900i&subset=cyrillic,cyrillic-ext,devanagari,greek,greek-ext,latin-ext,vietnamese');
+body {
+    margin: 0px;
+    font-family: 'Poppins', sans-serif;
+}
+ul {
+    list-style: none;
+}
+
+#mainNav a:hover {
+    color: white;
+}
+
+#openRooms {
+    font-size: 25px;
+    color: white;
+
+    margin-right: 50px;
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-top: 3px;
+    padding-bottom: 3px;
+    border-radius: 50px;
+    border: 2px solid;
+    transition: .5s;
+    text-decoration: none;
+
+}
+
+#openRooms:hover {
+    color: #66ff66;
+    background-color: white;
+    border: 1px solid white;
+    border-radius: 15px;
+}
+
+
+#mainNav a {
+    font-size: 1.2em;
+    text-decoration: none;
+    color: #bfbfbf;
+    transition: .5s;
+}
+
+#mainNav a:hover {
+    color: white;
+}
+#mainNav p {
+    float: right;
+    margin-top: 20px;
+}
+
+#mainNav ul {
+    margin-left: 35%;
+    margin-right: 35%;
+}
+
+#mainNav li {
+    margin-right: 10%;
+    display: inline;
+}
