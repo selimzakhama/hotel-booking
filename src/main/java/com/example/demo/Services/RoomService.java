@@ -29,7 +29,7 @@ public class RoomService {
             return null;
         }
     }
-    public Room saveRoom(Room room){
+    public void saveRoom(Room room){
         return roomRepository.save(room);
     }
 
